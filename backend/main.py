@@ -40,7 +40,14 @@ class ChatResponse(BaseModel):
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     try:
-        file_location = f"data/{file.filename}"
+        # Use /tmp on Vercel, otherwise use data/
+        if os.environ.get("VERCEL"):
+            upload_dir = "/tmp"
+        else:
+            upload_dir = "data"
+            os.makedirs(upload_dir, exist_ok=True)
+            
+        file_location = f"{upload_dir}/{file.filename}"
         with open(file_location, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
         

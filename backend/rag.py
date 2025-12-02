@@ -10,7 +10,10 @@ from langchain_core.documents import Document
 embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 # Initialize Vector Store
-PERSIST_DIRECTORY = "./data/chroma_db"
+if os.environ.get("VERCEL"):
+    PERSIST_DIRECTORY = "/tmp/chroma_db"
+else:
+    PERSIST_DIRECTORY = "./data/chroma_db"
 vectorstore = Chroma(
     persist_directory=PERSIST_DIRECTORY,
     embedding_function=embedding_function
