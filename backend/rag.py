@@ -13,25 +13,33 @@ from langchain_core.documents import Document
 from dotenv import load_dotenv
 load_dotenv()
 
-google_api_key = os.getenv("GOOGLE_API_KEY")
+embedding_function = None
+vectorstore = None
+rag_init_error = None
 
-if not google_api_key:
-    # This print will show up in Vercel logs
-    print("CRITICAL ERROR: GOOGLE_API_KEY is missing from environment variables!")
-    # We can try to proceed (it will fail) or raise a custom error
-    raise ValueError("GOOGLE_API_KEY not found. Please add it to Vercel Environment Variables.")
+try:
+    google_api_key = os.getenv("GOOGLE_API_KEY")
+    if not google_api_key:
+        raise ValueError("GOOGLE_API_KEY is missing from environment variables.")
 
-embedding_function = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004",
-    google_api_key=google_api_key
-)
+    embedding_function = GoogleGenerativeAIEmbeddings(
+        model="models/text-embedding-004",
+        google_api_key=google_api_key
+    )
 
-# Initialize Vector Store
-# Using InMemoryVectorStore for Vercel (ephemeral)
-vectorstore = InMemoryVectorStore(embedding_function)
+    # Initialize Vector Store
+    # Using InMemoryVectorStore for Vercel (ephemeral)
+    vectorstore = InMemoryVectorStore(embedding_function)
+
+except Exception as e:
+    rag_init_error = f"RAG Initialization Failed: {str(e)}"
+    print(rag_init_error)
 
 def ingest_document(file_path: str) -> str:
     """Ingests a document (PDF or Text) into the vector store."""
+    if rag_init_error:
+        return f"System Error: {rag_init_error}"
+        
     try:
         if file_path.endswith(".pdf"):
             loader = PyPDFLoader(file_path)
@@ -44,11 +52,17 @@ def ingest_document(file_path: str) -> str:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         splits = text_splitter.split_documents(documents)
         
-        vectorstore.add_documents(splits)
-        return f"Successfully ingested {len(splits)} chunks from {os.path.basename(file_path)}."
+        if vectorstore:
+            vectorstore.add_documents(splits)
+            return f"Successfully ingested {len(splits)} chunks from {os.path.basename(file_path)}."
+        else:
+            return "Vector Store not initialized."
     except Exception as e:
         return f"Error ingesting document: {str(e)}"
 
 def retrieve_documents(query: str, k: int = 3) -> List[Document]:
     """Retrieves relevant documents for a given query."""
+    if rag_init_error or not vectorstore:
+        print(f"Warning: Retrieval skipped due to error: {rag_init_error}")
+        return []
     return vectorstore.similarity_search(query, k=k)

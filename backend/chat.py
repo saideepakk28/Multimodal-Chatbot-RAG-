@@ -11,12 +11,23 @@ from backend.rag import retrieve_documents
 
 # Initialize Groq LLM
 # Using llama-3.1-8b-instant for speed and performance
-llm = ChatGroq(
-    model="llama-3.1-8b-instant",
-    temperature=0,
-    max_retries=2,
-    api_key=os.getenv("GROQ_API_KEY")
-)
+llm = None
+chat_init_error = None
+
+try:
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    if not groq_api_key:
+        raise ValueError("GROQ_API_KEY is missing from environment variables.")
+        
+    llm = ChatGroq(
+        model="llama-3.1-8b-instant",
+        temperature=0,
+        max_retries=2,
+        api_key=groq_api_key
+    )
+except Exception as e:
+    chat_init_error = f"Chat Initialization Failed: {str(e)}"
+    print(chat_init_error)
 
 @tool
 def calculator(expression: str) -> str:
@@ -40,7 +51,11 @@ def process_chat(message: str, history: List[BaseMessage], image_url: Optional[s
     Processes the user message with RAG, Tools, and optional Image.
     """
     
-    # 1. RAG Retrieval
+    # 1. Check for Init Errors
+    if chat_init_error:
+        return f"System Error: {chat_init_error}"
+        
+    # 2. RAG Retrieval
     docs = retrieve_documents(message)
     context_text = "\n\n".join([doc.page_content for doc in docs])
     
@@ -57,6 +72,9 @@ def process_chat(message: str, history: List[BaseMessage], image_url: Optional[s
     messages.append(HumanMessage(content=user_content))
 
     # 3. Bind tools and invoke
+    if not llm:
+        return "System Error: LLM not initialized."
+        
     llm_with_tools = llm.bind_tools(tools)
     response = llm_with_tools.invoke(messages)
     
