@@ -8,7 +8,8 @@ from langchain_core.documents import Document
 
 # Initialize Embeddings
 # Using Google Gemini Embeddings for lightweight deployment
-embedding_function = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+# Switched to text-embedding-004 as embedding-001 is hitting quota/deprecation limits
+embedding_function = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 
 # Initialize Vector Store
 # Using InMemoryVectorStore for Vercel (ephemeral)
