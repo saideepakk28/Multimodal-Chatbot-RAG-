@@ -1,8 +1,8 @@
 fastapi
 uvicorn
 python-multipart
-langchain
+langchain>=0.2.10
 langchain-community
-langchain-groq
+langchain-core>=0.2.10
 python-dotenv
 langchain-google-genai
