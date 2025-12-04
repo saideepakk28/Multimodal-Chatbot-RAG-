@@ -11,9 +11,9 @@ from backend.rag import retrieve_documents
 load_dotenv()
 
 # Initialize Gemini LLM
-# Using gemini-1.5-flash for speed and multimodal capabilities
+# Using gemini-pro as fallback for better availability
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
+    model="gemini-pro",
     temperature=0,
     max_retries=2,
     api_key=os.getenv("GOOGLE_API_KEY")
