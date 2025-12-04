@@ -9,8 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from backend.rag import ingest_document
-from backend.chat import process_chat
+from backend.rag import ingest_document, rag_init_error
+from backend.chat import process_chat, chat_init_error
 from langchain_core.messages import HumanMessage, AIMessage
 
 app = FastAPI()
@@ -61,6 +61,12 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
+    # Check for System Initialization Errors
+    if rag_init_error:
+        return {"response": f"System Error (RAG): {rag_init_error}"}
+    if chat_init_error:
+        return {"response": f"System Error (Chat): {chat_init_error}"}
+
     try:
         # Convert history to LangChain format
         lc_history = []
