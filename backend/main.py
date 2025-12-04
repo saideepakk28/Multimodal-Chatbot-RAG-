@@ -1,4 +1,7 @@
 import os
+import sys
+# Add project root to sys.path to resolve 'backend' package
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import shutil
 from typing import List, Optional
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
