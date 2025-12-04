@@ -12,9 +12,18 @@ from langchain_core.documents import Document
 # Explicitly passing API key to avoid DefaultCredentialsError on Vercel
 from dotenv import load_dotenv
 load_dotenv()
+
+google_api_key = os.getenv("GOOGLE_API_KEY")
+
+if not google_api_key:
+    # This print will show up in Vercel logs
+    print("CRITICAL ERROR: GOOGLE_API_KEY is missing from environment variables!")
+    # We can try to proceed (it will fail) or raise a custom error
+    raise ValueError("GOOGLE_API_KEY not found. Please add it to Vercel Environment Variables.")
+
 embedding_function = GoogleGenerativeAIEmbeddings(
     model="models/text-embedding-004",
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    google_api_key=google_api_key
 )
 
 # Initialize Vector Store
