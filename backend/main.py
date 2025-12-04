@@ -31,6 +31,16 @@ app.mount("/static", StaticFiles(directory="frontend"), name="static")
 async def read_root():
     return FileResponse("frontend/index.html")
 
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "online",
+        "google_key_set": bool(os.getenv("GOOGLE_API_KEY")),
+        "groq_key_set": bool(os.getenv("GROQ_API_KEY")),
+        "rag_init_error": rag_init_error,
+        "chat_init_error": chat_init_error
+    }
+
 # Models
 class ChatRequest(BaseModel):
     message: str
