@@ -13,7 +13,7 @@ A powerful multimodal chatbot capable of processing text and images, leveraging 
 ## 🛠️ Tech Stack
 
 -   **Backend**: Python, FastAPI, Uvicorn
--   **AI/LLM**: LangChain, Groq API (Llama 3, Mixtral, Gemma)
+-   **AI/LLM**: LangChain, Google Gemini (`gemini-1.5-flash`)
 -   **Vector Store**: ChromaDB
 -   **Embeddings**: HuggingFace (`all-MiniLM-L6-v2`)
 -   **Frontend**: HTML5, CSS3, Vanilla JavaScript
@@ -21,7 +21,7 @@ A powerful multimodal chatbot capable of processing text and images, leveraging 
 ## 📋 Prerequisites
 
 -   Python 3.8+
--   Groq API Key (Get one at [console.groq.com](https://console.groq.com))
+-   Google Gemini API Key (Get one at [aistudio.google.com](https://aistudio.google.com))
 
 ## 🔧 Installation
 
@@ -46,9 +46,9 @@ A powerful multimodal chatbot capable of processing text and images, leveraging 
     ```
 
 4.  **Set up Environment Variables**:
-    Create a `.env` file in the root directory and add your Groq API key:
+    Create a `.env` file in the root directory and add your Google API key:
     ```env
-    GROQ_API_KEY=your_groq_api_key_here
+    GOOGLE_API_KEY=your_google_api_key_here
     ```
 
 ## 🏃‍♂️ Running the Application
@@ -70,7 +70,7 @@ A powerful multimodal chatbot capable of processing text and images, leveraging 
 
 ## ⚠️ Known Issues
 
--   **Groq Model Availability**: Some vision models (like `llama-3.2-11b-vision-preview`) may be decommissioned or unavailable. The code is configured to fallback to stable text models (e.g., `llama-3.1-8b-instant`), but image analysis features will be disabled in that case.
+-   **Cold Starts**: On serverless platforms like Vercel, the first request might be slow as the application initializes.
 
 ## 🤝 Contributing
 
