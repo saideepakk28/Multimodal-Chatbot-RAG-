@@ -4,10 +4,6 @@ python-multipart
 langchain
 langchain-community
 langchain-groq
-langchain-huggingface
-chromadb
-pypdf
 python-dotenv
-sentence-transformers
 langchain-chroma
 langchain-google-genai

@@ -2,12 +2,16 @@ import os
 from typing import List
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Initialize Embeddings
-embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+# Using Google Gemini Embeddings for lightweight deployment
+embedding_function = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 # Initialize Vector Store
 if os.environ.get("VERCEL"):
