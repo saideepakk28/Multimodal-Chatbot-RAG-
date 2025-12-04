@@ -5,5 +5,4 @@ langchain
 langchain-community
 langchain-groq
 python-dotenv
-langchain-chroma
 langchain-google-genai

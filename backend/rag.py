@@ -3,25 +3,15 @@ from typing import List
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_chroma import Chroma
-from langchain_core.documents import Document
-from dotenv import load_dotenv
-
-load_dotenv()
+from langchain_core.vectorstores import InMemoryVectorStore
 
 # Initialize Embeddings
 # Using Google Gemini Embeddings for lightweight deployment
 embedding_function = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 # Initialize Vector Store
-if os.environ.get("VERCEL"):
-    PERSIST_DIRECTORY = "/tmp/chroma_db"
-else:
-    PERSIST_DIRECTORY = "./data/chroma_db"
-vectorstore = Chroma(
-    persist_directory=PERSIST_DIRECTORY,
-    embedding_function=embedding_function
-)
+# Using InMemoryVectorStore for Vercel (ephemeral)
+vectorstore = InMemoryVectorStore(embedding_function)
 
 def ingest_document(file_path: str) -> str:
     """Ingests a document (PDF or Text) into the vector store."""
