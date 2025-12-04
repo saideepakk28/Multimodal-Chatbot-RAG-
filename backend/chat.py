@@ -2,21 +2,20 @@ import os
 print("Loading backend.chat...")
 from typing import List, Optional
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
+
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, BaseMessage
 from langchain_core.tools import tool
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from backend.rag import retrieve_documents
 
-load_dotenv()
-
-# Initialize Gemini LLM
-# Using gemini-pro as fallback for better availability
-llm = ChatGoogleGenerativeAI(
-    model="gemini-pro",
+# Initialize Groq LLM
+# Using llama-3.1-8b-instant for speed and performance
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
     temperature=0,
     max_retries=2,
-    api_key=os.getenv("GOOGLE_API_KEY")
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
 @tool
