@@ -9,7 +9,13 @@ from langchain_core.documents import Document
 # Initialize Embeddings
 # Using Google Gemini Embeddings for lightweight deployment
 # Switched to text-embedding-004 as embedding-001 is hitting quota/deprecation limits
-embedding_function = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+# Explicitly passing API key to avoid DefaultCredentialsError on Vercel
+from dotenv import load_dotenv
+load_dotenv()
+embedding_function = GoogleGenerativeAIEmbeddings(
+    model="models/text-embedding-004",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 # Initialize Vector Store
 # Using InMemoryVectorStore for Vercel (ephemeral)
